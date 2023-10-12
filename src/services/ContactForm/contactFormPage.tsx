@@ -16,6 +16,7 @@ import {
   SpacedStyle,
   ImageContainer,
 } from "../../component/styledComponent";
+import { WrappedSEO } from "../../component/WrappedSEO";
 
 const ADD_CONTACT_WITH_PHONES = gql`
   mutation AddContactWithPhones(
@@ -111,6 +112,7 @@ export const ContactForm = () => {
 
   return (
     <CotainerPage>
+      <WrappedSEO title={"Create Contact"} />
       <StyledFormContainer>
         <div>
           <Typography.Title>Create Contact</Typography.Title>

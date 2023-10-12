@@ -16,6 +16,7 @@ import {
   SpacedStyle,
   ImageContainer,
 } from "../../component/styledComponent";
+import { WrappedSEO } from "../../component/WrappedSEO";
 
 type Phone = {
   number: string;
@@ -133,6 +134,7 @@ export const EditContactForm: React.FC = () => {
 
   return (
     <CotainerPage>
+      <WrappedSEO title="Edit Contact" />
       <StyledFormContainer>
         <div>
           <Typography.Title>Edit Contact</Typography.Title>

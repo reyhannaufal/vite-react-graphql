@@ -6,6 +6,7 @@ import { PlusOutlined } from "@ant-design/icons";
 
 import styled from "@emotion/styled";
 import Title from "antd/es/typography/Title";
+import { WrappedSEO } from "../../component/WrappedSEO";
 
 export const DELETE_CONTACT = gql`
   mutation DeleteContact($id: Int!) {
@@ -176,6 +177,7 @@ export const ContactList = () => {
 
   return (
     <CotainerPage>
+      <WrappedSEO title="Contact List" />
       <Title>Contact List</Title>
       <Breadcrumb>
         <Breadcrumb.Item>Home</Breadcrumb.Item>
