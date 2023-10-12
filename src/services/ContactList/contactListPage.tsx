@@ -89,17 +89,20 @@ export const ContactList = () => {
   const [currentOffset, setCurrentOffset] = useState(0);
   const navigate = useNavigate();
 
-  const { data, error, refetch } = useQuery(FETCH_CONTACTS_WITH_COUNT, {
-    variables: {
-      offset: currentOffset,
-      limit: itemsPerPage,
-      where: searchTerm
-        ? {
-            first_name: { _ilike: `%${searchTerm}%` },
-          }
-        : null,
-    },
-  });
+  const { data, error, loading, refetch } = useQuery(
+    FETCH_CONTACTS_WITH_COUNT,
+    {
+      variables: {
+        offset: currentOffset,
+        limit: itemsPerPage,
+        where: searchTerm
+          ? {
+              first_name: { _ilike: `%${searchTerm}%` },
+            }
+          : null,
+      },
+    }
+  );
 
   const [deleteContact] = useMutation(DELETE_CONTACT);
 
@@ -111,7 +114,7 @@ export const ContactList = () => {
 
   const totalCount = data?.contact_aggregate.aggregate?.count || 0;
   const dataSource: Contact[] =
-    data?.contact.map((contact: Contact) => ({
+    data?.contact?.map((contact: Contact) => ({
       ...contact,
       key: contact.id,
     })) || [];
@@ -173,6 +176,10 @@ export const ContactList = () => {
 
   if (error) {
     return <div>Error loading contacts: {error.message}</div>;
+  }
+
+  if (loading) {
+    return <div>Loading...</div>;
   }
 
   return (
