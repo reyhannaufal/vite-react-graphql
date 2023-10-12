@@ -1,7 +1,21 @@
 import { useEffect, useState } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { useNavigate, useParams } from "react-router-dom";
-import { Input, Button, Form, notification } from "antd";
+import {
+  Input,
+  Button,
+  Form,
+  notification,
+  Space,
+  Typography,
+  Breadcrumb,
+} from "antd";
+import {
+  CotainerPage,
+  StyledFormContainer,
+  SpacedStyle,
+  ImageContainer,
+} from "../../component/styledComponent";
 
 type Phone = {
   number: string;
@@ -55,7 +69,7 @@ const UPDATE_PHONE_NUMBER = gql`
   }
 `;
 
-const EditContactForm: React.FC = () => {
+export const EditContactForm: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -118,46 +132,68 @@ const EditContactForm: React.FC = () => {
   };
 
   return (
-    <Form layout="vertical">
-      <Form.Item label="First Name">
-        <Input
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          placeholder="First Name"
-        />
-      </Form.Item>
+    <CotainerPage>
+      <StyledFormContainer>
+        <div>
+          <Typography.Title>Edit Contact</Typography.Title>
+          <Breadcrumb>
+            <Breadcrumb.Item>Home</Breadcrumb.Item>
+            <Breadcrumb.Item>
+              <a href="/contact/list">Contact List</a>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>Edit Contact</Breadcrumb.Item>
+          </Breadcrumb>
 
-      <Form.Item label="Last Name">
-        <Input
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          placeholder="Last Name"
-        />
-      </Form.Item>
+          <SpacedStyle>
+            <Form layout="vertical">
+              <Form.Item label="First Name">
+                <Input
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  placeholder="First Name"
+                />
+              </Form.Item>
+              <Form.Item label="Last Name">
+                <Input
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  placeholder="Last Name"
+                />
+              </Form.Item>
 
-      {phones.map((phone, index) => (
-        <Form.Item key={index} label={`Phone ${index + 1}`}>
-          <Input
-            value={phone}
-            onChange={(e) =>
-              setPhones([
-                ...phones.slice(0, index),
-                e.target.value,
-                ...phones.slice(index + 1),
-              ])
-            }
-            placeholder="Phone Number"
+              {phones.map((phone, index) => (
+                <Form.Item key={index} label={`Phone ${index + 1}`}>
+                  <Input
+                    value={phone}
+                    onChange={(e) =>
+                      setPhones([
+                        ...phones.slice(0, index),
+                        e.target.value,
+                        ...phones.slice(index + 1),
+                      ])
+                    }
+                    placeholder="Phone Number"
+                  />
+                </Form.Item>
+              ))}
+
+              <Form.Item>
+                <Space>
+                  <Button type="primary" onClick={handleUpdate}>
+                    Update Contact
+                  </Button>
+                </Space>
+              </Form.Item>
+            </Form>
+          </SpacedStyle>
+        </div>
+        <ImageContainer>
+          <img
+            src="https://images.unsplash.com/photo-1517842645767-c639042777db?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=60"
+            alt="Description of the image"
           />
-        </Form.Item>
-      ))}
-
-      <Form.Item>
-        <Button type="primary" onClick={handleUpdate}>
-          Update Contact
-        </Button>
-      </Form.Item>
-    </Form>
+        </ImageContainer>
+      </StyledFormContainer>
+    </CotainerPage>
   );
 };
-
-export default EditContactForm;

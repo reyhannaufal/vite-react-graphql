@@ -1,7 +1,21 @@
 import { useState } from "react";
 import { useMutation, gql } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
-import { Form, Input, Button, Space } from "antd";
+import {
+  Button,
+  Input,
+  Form,
+  Space,
+  Breadcrumb,
+  Typography,
+  notification,
+} from "antd";
+import {
+  CotainerPage,
+  StyledFormContainer,
+  SpacedStyle,
+  ImageContainer,
+} from "../../component/styledComponent";
 
 const ADD_CONTACT_WITH_PHONES = gql`
   mutation AddContactWithPhones(
@@ -28,7 +42,7 @@ const ADD_CONTACT_WITH_PHONES = gql`
   }
 `;
 
-function ContactForm() {
+export const ContactForm = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phones, setPhones] = useState([{ number: "" }]);
@@ -43,6 +57,12 @@ function ContactForm() {
     const updatedPhones = [...phones];
     updatedPhones[index].number = value;
     setPhones(updatedPhones);
+  };
+
+  const handleDeletePhone = (indexToDelete: number) => {
+    setPhones((prevPhones) =>
+      prevPhones.filter((_, index) => index !== indexToDelete)
+    );
   };
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
@@ -68,49 +88,90 @@ function ContactForm() {
       }
 
       if (data && data.insert_contact && data.insert_contact.returning) {
-        alert("Contact added successfully!");
+        notification.success({
+          message: "Contact added successfully",
+        });
         setFirstName("");
         setLastName("");
         setPhones([{ number: "" }]);
 
         navigate("/contact/list");
       } else {
-        alert("Unknown error occurred while adding contact.");
+        notification.error({
+          message: "Error adding contact",
+        });
       }
     } catch (error) {
-      alert("Error adding contact: " + (error as Error).message);
+      notification.error({
+        message: "Error adding contact",
+        description: (error as Error).message,
+      });
     }
   };
 
   return (
-    <Form layout="vertical" onSubmitCapture={handleSubmit}>
-      <Form.Item label="First Name" required>
-        <Input
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-        />
-      </Form.Item>
-      <Form.Item label="Last Name" required>
-        <Input value={lastName} onChange={(e) => setLastName(e.target.value)} />
-      </Form.Item>
-      {phones.map((phone, index) => (
-        <Form.Item label={`Phone ${index + 1}`} key={index} required>
-          <Input
-            value={phone.number}
-            onChange={(e) => handlePhoneChange(index, e.target.value)}
-          />
-        </Form.Item>
-      ))}
-      <Space>
-        <Button type="dashed" onClick={handleAddPhone}>
-          Add Another Phone
-        </Button>
-        <Button type="primary" htmlType="submit">
-          Add Contact
-        </Button>
-      </Space>
-    </Form>
-  );
-}
+    <CotainerPage>
+      <StyledFormContainer>
+        <div>
+          <Typography.Title>Create Contact</Typography.Title>
+          <Breadcrumb>
+            <Breadcrumb.Item>Home</Breadcrumb.Item>
+            <Breadcrumb.Item>
+              <a href="/contact/list">Contact List</a>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>Create Contact</Breadcrumb.Item>
+          </Breadcrumb>
 
-export default ContactForm;
+          <SpacedStyle>
+            <Form layout="vertical" onSubmitCapture={handleSubmit}>
+              <Form.Item label="First Name" required>
+                <Input
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                />
+              </Form.Item>
+              <Form.Item label="Last Name" required>
+                <Input
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                />
+              </Form.Item>
+              {phones.map((phone, index) => (
+                <Form.Item label={`Phone ${index + 1}`} key={index} required>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "8px",
+                    }}
+                  >
+                    <Input
+                      value={phone.number}
+                      onChange={(e) => handlePhoneChange(index, e.target.value)}
+                    />
+                    <Button danger onClick={() => handleDeletePhone(index)}>
+                      Delete
+                    </Button>
+                  </div>
+                </Form.Item>
+              ))}
+              <Space>
+                <Button type="dashed" onClick={handleAddPhone}>
+                  Add Another Phone
+                </Button>
+                <Button type="primary" htmlType="submit">
+                  Add Contact
+                </Button>
+              </Space>
+            </Form>
+          </SpacedStyle>
+        </div>
+        <ImageContainer>
+          <img
+            src="https://images.unsplash.com/photo-1517842645767-c639042777db?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=60"
+            alt="Description of the image"
+          />
+        </ImageContainer>
+      </StyledFormContainer>
+    </CotainerPage>
+  );
+};

@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useQuery, useMutation, gql } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
-import { Table, Button, Space, Input, notification } from "antd";
+import { Table, Button, Space, Input, notification, Breadcrumb } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 
 import styled from "@emotion/styled";
+import Title from "antd/es/typography/Title";
 
 export const DELETE_CONTACT = gql`
   mutation DeleteContact($id: Int!) {
@@ -61,7 +63,27 @@ const SearchBox = styled.div`
   margin-bottom: 16px;
 `;
 
-export function ContactList() {
+const CotainerPage = styled.div`
+  padding: 24px;
+  height: 100vh;
+
+  @media (min-width: 768px) {
+    padding: 128px;
+  }
+`;
+
+const SpacedStyle = styled(Space)`
+  margin-bottom: 16px;
+  margin-top: 16px;
+  display: flex;
+  justify-content: space-between;
+
+  @media (max-width: 768px) {
+    align-items: flex-start;
+  }
+`;
+
+export const ContactList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentOffset, setCurrentOffset] = useState(0);
   const navigate = useNavigate();
@@ -75,7 +97,6 @@ export function ContactList() {
             first_name: { _ilike: `%${searchTerm}%` },
           }
         : null,
-      // You can define 'order_by', 'distinct_on' or other parameters if needed.
     },
   });
 
@@ -137,7 +158,11 @@ export function ContactList() {
           <ActionButton onClick={() => handleEdit(record.id)}>
             Edit
           </ActionButton>
-          <ActionButton onClick={() => handleDelete(record.id)}>
+          <ActionButton
+            onClick={() => handleDelete(record.id)}
+            danger
+            type="primary"
+          >
             Delete
           </ActionButton>
         </Space>
@@ -150,14 +175,15 @@ export function ContactList() {
   }
 
   return (
-    <div>
-      <Space
-        style={{
-          marginBottom: 16,
-          display: "flex",
-          justifyContent: "space-between",
-        }}
-      >
+    <CotainerPage>
+      <Title>Contact List</Title>
+      <Breadcrumb>
+        <Breadcrumb.Item>Home</Breadcrumb.Item>
+        <Breadcrumb.Item>
+          <a href="">Contact List</a>
+        </Breadcrumb.Item>
+      </Breadcrumb>
+      <SpacedStyle>
         <SearchBox>
           <Input
             value={searchTerm}
@@ -165,18 +191,24 @@ export function ContactList() {
             placeholder="Search for contacts"
           />
         </SearchBox>
-        <Button onClick={() => navigate("/contact/create")}>Add Contact</Button>
-      </Space>
+        <Button
+          icon={<PlusOutlined />}
+          onClick={() => navigate("/contact/create")}
+          type="primary"
+        >
+          Add More Contact
+        </Button>
+      </SpacedStyle>
       <Table
         columns={columns}
         dataSource={dataSource}
         rowKey="id"
         pagination={{
           pageSize: itemsPerPage,
-          total: totalCount, // This would be the total count of your contacts, fetched from the server
+          total: totalCount,
         }}
         onChange={handleTableChange}
       />
-    </div>
+    </CotainerPage>
   );
-}
+};
