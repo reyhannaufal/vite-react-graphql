@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation, gql } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 import {
   Button,
@@ -17,31 +17,7 @@ import {
   ImageContainer,
 } from "../../component/styledComponent";
 import { WrappedSEO } from "../../component/WrappedSEO";
-
-export const ADD_CONTACT_WITH_PHONES = gql`
-  mutation AddContactWithPhones(
-    $first_name: String!
-    $last_name: String!
-    $phones: [phone_insert_input!]!
-  ) {
-    insert_contact(
-      objects: {
-        first_name: $first_name
-        last_name: $last_name
-        phones: { data: $phones }
-      }
-    ) {
-      returning {
-        first_name
-        last_name
-        id
-        phones {
-          number
-        }
-      }
-    }
-  }
-`;
+import { ADD_CONTACT_WITH_PHONES } from "./graphql";
 
 export const ContactForm = () => {
   const [firstName, setFirstName] = useState("");

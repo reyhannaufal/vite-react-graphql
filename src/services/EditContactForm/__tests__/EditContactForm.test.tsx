@@ -1,10 +1,7 @@
 import { render, fireEvent, waitFor } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
-import {
-  EditContactForm,
-  FETCH_CONTACT_BY_ID,
-  UPDATE_CONTACT,
-} from "../EditContactForm";
+import { EditContactForm } from "../EditContactForm";
+import { FETCH_CONTACT_BY_ID, UPDATE_CONTACT } from "../graphql";
 
 const mocks = [
   {

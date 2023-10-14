@@ -1,8 +1,9 @@
 import { render, fireEvent, waitFor } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter, MemoryRouter as Router } from "react-router-dom";
-import { ADD_CONTACT_WITH_PHONES, ContactForm } from "../ContactFormPage";
+import { ContactForm } from "../ContactFormPage";
 import { describe, it, vi, expect } from "vitest";
+import { ADD_CONTACT_WITH_PHONES } from "../graphql";
 
 const mocks = [
   {

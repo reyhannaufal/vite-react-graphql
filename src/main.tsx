@@ -8,8 +8,8 @@ import ReactDOM from "react-dom/client";
 
 import { ApolloWrapper } from "./lib/apolloProvider";
 
-import { ContactList } from "./services/ContactList/ContactListPage";
 import { ContactForm } from "./services/ContactForm/ContactFormPage";
+import { ContactList } from "./services/ContactList/ContactListPage";
 import { EditContactForm } from "./services/EditContactForm/EditContactForm";
 import NotFound from "./services/NotFound/NotFound";
 

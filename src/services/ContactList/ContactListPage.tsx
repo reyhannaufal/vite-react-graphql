@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useQuery, useMutation, gql } from "@apollo/client";
+import { useEffect, useState } from "react";
+import { useQuery, useMutation } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 import { Table, Button, Space, Input, notification, Breadcrumb } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
@@ -7,49 +7,9 @@ import { PlusOutlined } from "@ant-design/icons";
 import styled from "@emotion/styled";
 import Title from "antd/es/typography/Title";
 import { WrappedSEO } from "../../component/WrappedSEO";
+import { DELETE_CONTACT, FETCH_CONTACTS_WITH_COUNT } from "./graphql";
 
-export const DELETE_CONTACT = gql`
-  mutation DeleteContact($id: Int!) {
-    delete_contact_by_pk(id: $id) {
-      first_name
-      last_name
-      id
-    }
-  }
-`;
-
-export const FETCH_CONTACTS_WITH_COUNT = gql`
-  query GetContactListWithCount(
-    $distinct_on: [contact_select_column!]
-    $limit: Int
-    $offset: Int
-    $order_by: [contact_order_by!]
-    $where: contact_bool_exp
-  ) {
-    contact(
-      distinct_on: $distinct_on
-      limit: $limit
-      offset: $offset
-      order_by: $order_by
-      where: $where
-    ) {
-      created_at
-      first_name
-      id
-      last_name
-      phones {
-        number
-      }
-    }
-    contact_aggregate(where: $where) {
-      aggregate {
-        count
-      }
-    }
-  }
-`;
-
-const itemsPerPage = 10;
+const ITEMS_PER_PAGE = 10;
 
 const ActionButton = styled(Button)`
   margin-right: 8px;
@@ -84,45 +44,61 @@ const SpacedStyle = styled(Space)`
   }
 `;
 
+interface Contact {
+  id: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
+}
+
 export const ContactList = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentOffset, setCurrentOffset] = useState(0);
-  const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const localContacts = JSON.parse(localStorage.getItem("contacts") || "[]");
+  const [dataSource, setDataSource] = useState<Contact[]>(localContacts);
 
   const { data, error, loading, refetch } = useQuery(
     FETCH_CONTACTS_WITH_COUNT,
     {
       variables: {
         offset: currentOffset,
-        limit: itemsPerPage,
+        limit: ITEMS_PER_PAGE,
         where: searchTerm
           ? {
               first_name: { _ilike: `%${searchTerm}%` },
             }
           : null,
+        order_by: {
+          created_at: "desc",
+        },
       },
+      fetchPolicy: "network-only",
     }
   );
-
   const [deleteContact] = useMutation(DELETE_CONTACT);
 
-  interface Contact {
-    id: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [key: string]: any;
-  }
-
   const totalCount = data?.contact_aggregate.aggregate?.count || 0;
-  const dataSource: Contact[] =
-    data?.contact?.map((contact: Contact) => ({
-      ...contact,
-      key: contact.id,
-    })) || [];
+
+  useEffect(() => {
+    // When data is successfully fetched from the server, update the dataSource state and localStorage
+    if (data && data.contact) {
+      const contactsFromServer = data.contact.map((contact: Contact) => ({
+        ...contact,
+        key: contact.id,
+      }));
+      setDataSource(contactsFromServer);
+      localStorage.setItem("contacts", JSON.stringify(contactsFromServer));
+    }
+  }, [data]);
 
   const handleDelete = async (id: string) => {
     try {
       await deleteContact({ variables: { id } });
       notification.success({ message: "Contact deleted successfully" });
+      const updatedContacts = dataSource.filter((contact) => contact.id !== id);
+      setDataSource(updatedContacts);
+      localStorage.setItem("contacts", JSON.stringify(updatedContacts));
       refetch();
     } catch {
       notification.error({ message: "Error deleting contact" });
@@ -137,6 +113,7 @@ export const ContactList = () => {
   const handleTableChange = (pagination: any) => {
     const newOffset = (pagination.current - 1) * pagination.pageSize;
     setCurrentOffset(newOffset);
+    setCurrentPage(pagination.current);
   };
 
   const columns = [
@@ -174,14 +151,6 @@ export const ContactList = () => {
     },
   ];
 
-  if (error) {
-    return <div>Error loading contacts: {error.message}</div>;
-  }
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <CotainerPage>
       <WrappedSEO title="Contact List" />
@@ -208,16 +177,21 @@ export const ContactList = () => {
           Add More Contact
         </Button>
       </SpacedStyle>
-      <Table
-        columns={columns}
-        dataSource={dataSource}
-        rowKey="id"
-        pagination={{
-          pageSize: itemsPerPage,
-          total: totalCount,
-        }}
-        onChange={handleTableChange}
-      />
+      {loading && <p>Loading...</p>}
+      {error && <p>Error: {error.message}</p>}
+      {!loading && !error && (
+        <Table
+          columns={columns}
+          dataSource={dataSource}
+          rowKey="id"
+          pagination={{
+            current: currentPage,
+            pageSize: ITEMS_PER_PAGE,
+            total: totalCount,
+          }}
+          onChange={handleTableChange}
+        />
+      )}
     </CotainerPage>
   );
 };
