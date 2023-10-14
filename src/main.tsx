@@ -20,7 +20,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <Route path="/contact/list" element={<ContactList />} />
         <Route path="/contact/create" element={<ContactForm />} />
         <Route path="/contact/edit/:id" element={<EditContactForm />} />
-        <Route path="/" element={<Navigate to={"/contact/lists"} />} />
+        <Route path="/" element={<Navigate to={"/contact/list"} />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
