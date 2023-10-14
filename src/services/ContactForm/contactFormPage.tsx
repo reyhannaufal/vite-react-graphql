@@ -18,7 +18,7 @@ import {
 } from "../../component/styledComponent";
 import { WrappedSEO } from "../../component/WrappedSEO";
 
-const ADD_CONTACT_WITH_PHONES = gql`
+export const ADD_CONTACT_WITH_PHONES = gql`
   mutation AddContactWithPhones(
     $first_name: String!
     $last_name: String!
@@ -128,6 +128,7 @@ export const ContactForm = () => {
             <Form layout="vertical" onSubmitCapture={handleSubmit}>
               <Form.Item label="First Name" required>
                 <Input
+                  data-testid="firstNameInput"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                 />
@@ -135,6 +136,7 @@ export const ContactForm = () => {
               <Form.Item label="Last Name" required>
                 <Input
                   value={lastName}
+                  data-testid="lastNameInput"
                   onChange={(e) => setLastName(e.target.value)}
                 />
               </Form.Item>
@@ -148,6 +150,7 @@ export const ContactForm = () => {
                   >
                     <Input
                       value={phone.number}
+                      data-testid="phoneInput"
                       onChange={(e) => handlePhoneChange(index, e.target.value)}
                     />
                     <Button danger onClick={() => handleDeletePhone(index)}>
@@ -157,10 +160,18 @@ export const ContactForm = () => {
                 </Form.Item>
               ))}
               <Space>
-                <Button type="dashed" onClick={handleAddPhone}>
+                <Button
+                  type="dashed"
+                  onClick={handleAddPhone}
+                  data-testid="addButton"
+                >
                   Add Another Phone
                 </Button>
-                <Button type="primary" htmlType="submit">
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  data-testid="submitButton"
+                >
                   Add Contact
                 </Button>
               </Space>

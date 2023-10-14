@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
-import { ContactList, FETCH_CONTACTS_WITH_COUNT } from "../contactListPage";
+import { ContactList, FETCH_CONTACTS_WITH_COUNT } from "../ContactListPage";
 import { describe, it, vi, expect } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 import { waitFor } from "@testing-library/react";

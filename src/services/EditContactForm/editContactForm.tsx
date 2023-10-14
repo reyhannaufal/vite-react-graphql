@@ -22,7 +22,7 @@ type Phone = {
   number: string;
 };
 
-const FETCH_CONTACT_BY_ID = gql`
+export const FETCH_CONTACT_BY_ID = gql`
   query GetContactById($id: Int!) {
     contact_by_pk(id: $id) {
       id
@@ -35,7 +35,7 @@ const FETCH_CONTACT_BY_ID = gql`
   }
 `;
 
-const UPDATE_CONTACT = gql`
+export const UPDATE_CONTACT = gql`
   mutation EditContactById($id: Int!, $_set: contact_set_input) {
     update_contact_by_pk(pk_columns: { id: $id }, _set: $_set) {
       id
@@ -151,6 +151,8 @@ export const EditContactForm: React.FC = () => {
               <Form.Item label="First Name">
                 <Input
                   value={firstName}
+                  data-testid="firstNameInput"
+                  id="firstNameInput"
                   onChange={(e) => setFirstName(e.target.value)}
                   placeholder="First Name"
                 />
