@@ -6,7 +6,7 @@ interface ApolloProviderProps {
 }
 
 const client = new ApolloClient({
-  uri: process.env.GRAPHQL_ENDPOINT,
+  uri: "https://wpe-hiring.tokopedia.net/graphql",
   cache: new InMemoryCache(),
 });
 
